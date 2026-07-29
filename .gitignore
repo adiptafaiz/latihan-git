@@ -216,3 +216,23 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Next.js / Node
+node_modules/
+.next/
+out/
+build/
+*.tsbuildinfo
+next-env.d.ts
+
+# Prisma
+dev.db
+dev.db-journal
+prisma/migrations/dev/
+
+# Env
+.env
+
+# OS / editor
+.DS_Store
+*.pem

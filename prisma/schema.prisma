@@ -1,0 +1,30 @@
+// Prisma schema — Aplikasi Pendataan Karyawan
+// Catatan: SQLite tidak mendukung `enum`, jadi `status` disimpan sebagai String
+// dan divalidasi sebagai enum (ACTIVE|INACTIVE) di layer aplikasi (Zod).
+// Saat pindah ke PostgreSQL, boleh ubah ke enum native bila perlu.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Employee {
+  id         String   @id @default(cuid())
+  nip        String   @unique
+  name       String
+  email      String   @unique
+  phone      String?
+  position   String
+  department String
+  joinDate   DateTime
+  status     String   @default("ACTIVE")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([department])
+  @@index([status])
+  @@index([name])
+}
