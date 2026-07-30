@@ -6,6 +6,7 @@ import { EmployeeTable } from "@/components/employees/employee-table";
 import { EmployeeFilters } from "@/components/employees/employee-filters";
 import { EmployeePagination } from "@/components/employees/employee-pagination";
 import { ImportEmployeesButton } from "@/components/employees/import-employees-button";
+import { auth } from "@/lib/auth";
 import {
   getEmployees,
   getDepartments,
@@ -27,7 +28,7 @@ export default async function EmployeesPage({
 }: {
   searchParams: SearchParams;
 }) {
-  const sp = await searchParams;
+  const [sp, session] = await Promise.all([searchParams, auth()]);
   const q = first(sp.q);
   const department = first(sp.department);
   const statusRaw = first(sp.status);
@@ -58,6 +59,7 @@ export default async function EmployeesPage({
     sort,
     order,
   };
+  const isAdmin = session?.user?.role === "admin";
 
   return (
     <div className="space-y-6">
@@ -66,7 +68,7 @@ export default async function EmployeesPage({
         description={`Total ${total} karyawan terdaftar`}
       >
         <div className="flex flex-wrap gap-2">
-          <ImportEmployeesButton />
+          {isAdmin ? <ImportEmployeesButton /> : null}
           <Button asChild variant="outline">
             <Link href="/api/employees/export">
               <Download className="h-4 w-4" />

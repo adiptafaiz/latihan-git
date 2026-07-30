@@ -84,9 +84,12 @@ prisma/
 
 Buka http://localhost:3000 → akan redirect ke `/login` (autentikasi admin).
 
-**Login default** (otomatis dibuat saat seed):
-- Email: `admin@perusahaan.com`
-- Password: `admin123`
+**Akun demo** (otomatis dibuat saat seed):
+
+| Role | Email | Password | Akses |
+|---|---|---|---|
+| Admin | `admin@perusahaan.com` | `admin123` | Akses penuh, termasuk import dan hapus. |
+| Staff | `staff@perusahaan.com` | `staff123` | Lihat, tambah, ubah, dan export karyawan. |
 
 ### Catatan PostgreSQL
 - `status` disimpan sebagai `String` (default `"ACTIVE"`) untuk migrasi minimal

@@ -37,7 +37,16 @@ model User {
   emailVerified DateTime?
   password     String?
   image        String?
-  role         String    @default("admin")
+  phone        String?
+  position     String?
+  department   String?
+  address      String?
+  status       String    @default("ACTIVE")
+  role         String    @default("staff")
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+
+  @@index([role])
+  @@index([status])
+  @@index([department])
 }

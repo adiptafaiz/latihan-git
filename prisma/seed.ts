@@ -10,16 +10,38 @@ async function main() {
   await prisma.user.deleteMany({});
 
   // Admin user default
-  const hashed = await bcrypt.hash("admin123", 12);
+  const adminHash = await bcrypt.hash("admin123", 12);
   await prisma.user.create({
     data: {
       email: "admin@perusahaan.com",
       name: "Administrator",
-      password: hashed,
+      password: adminHash,
       role: "admin",
+      position: "HR Manager",
+      department: "Human Resources",
+      phone: "081111111111",
+      address: "Jl. Sudirman No. 1, Jakarta",
+      status: "ACTIVE",
     },
   });
   console.log("✅ Admin user dibuat: admin@perusahaan.com / admin123");
+
+  // Staff user default
+  const staffHash = await bcrypt.hash("staff123", 12);
+  await prisma.user.create({
+    data: {
+      email: "staff@perusahaan.com",
+      name: "Staff Demo",
+      password: staffHash,
+      role: "staff",
+      position: "Junior Developer",
+      department: "Engineering",
+      phone: "081222222222",
+      address: "Jl. Asia Afrika No. 2, Bandung",
+      status: "ACTIVE",
+    },
+  });
+  console.log("✅ Staff user dibuat: staff@perusahaan.com / staff123");
 
   await prisma.employee.createMany({
     data: [

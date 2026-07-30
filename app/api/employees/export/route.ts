@@ -1,12 +1,17 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { escapeCsv, CSV_HEADERS } from "@/lib/csv";
-import { formatDate } from "@/lib/utils";
+import { auth } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 /** GET /api/employees/export → unduh CSV seluruh karyawan. */
 export async function GET() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const employees = await prisma.employee.findMany({
     orderBy: { createdAt: "desc" },
   });
