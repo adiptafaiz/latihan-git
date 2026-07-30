@@ -44,7 +44,7 @@ export default async function EmployeesPage({
         <div className="flex flex-wrap gap-2">
           <ImportEmployeesButton />
           <Button asChild variant="outline">
-            <Link href="/api/employees/export" target="_blank">
+            <Link href="/api/employees/export">
               <Download className="h-4 w-4" />
               Export CSV
             </Link>

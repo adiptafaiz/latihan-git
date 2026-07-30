@@ -2,6 +2,7 @@
 
 import { useState, useTransition, useRef } from "react";
 import Link from "next/link";
+import { Upload } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,9 +44,16 @@ export function ImportEmployeesButton() {
 
   function downloadTemplate() {
     const header = "nip,name,email,phone,position,department,joinDate,status\r\n";
-    const sample =
-      "EMP099,Contoh Karyawan,contoh@perusahaan.com,081200000000,Staff,Engineering,2024-01-01,ACTIVE\r\n";
-    const blob = new Blob([header + sample], { type: "text/csv;charset=utf-8" });
+    const samples = [
+      "EMP101,Budi Santoso,budi@perusahaan.com,081234567890,Software Engineer,Engineering,2023-01-15,ACTIVE",
+      "EMP102,Siti Aminah,siti@perusahaan.com,081298765432,HR Officer,Human Resources,2022-06-01,ACTIVE",
+      "EMP103,Andi Wijaya,andi@perusahaan.com,,Finance Staff,Finance,2021-03-20,INACTIVE",
+      "EMP104,Dewi Lestari,dewi@perusahaan.com,081311112222,Marketing Specialist,Marketing,2023-09-05,ACTIVE",
+      "EMP105,Rudi Hartono,rudi@perusahaan.com,081455566677,Operations Lead,Operations,2020-11-12,ACTIVE",
+    ].join("\r\n");
+    const blob = new Blob([header + samples + "\r\n"], {
+      type: "text/csv;charset=utf-8",
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -56,8 +64,9 @@ export function ImportEmployeesButton() {
 
   return (
     <>
-      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
-        Import
+      <Button variant="outline" onClick={() => setOpen(true)}>
+        <Upload className="h-4 w-4" />
+        Import CSV
       </Button>
 
       {open ? (
