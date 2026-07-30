@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus, Download } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { EmployeeTable } from "@/components/employees/employee-table";
 import { EmployeeFilters } from "@/components/employees/employee-filters";
 import { EmployeePagination } from "@/components/employees/employee-pagination";
+import { ImportEmployeesButton } from "@/components/employees/import-employees-button";
 import { getEmployees, getDepartments } from "@/lib/actions/employee";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
@@ -40,12 +41,21 @@ export default async function EmployeesPage({
         title="Karyawan"
         description={`Total ${total} karyawan terdaftar`}
       >
-        <Button asChild>
-          <Link href="/employees/new">
-            <Plus className="h-4 w-4" />
-            Tambah Karyawan
-          </Link>
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <ImportEmployeesButton />
+          <Button asChild variant="outline">
+            <Link href="/api/employees/export" target="_blank">
+              <Download className="h-4 w-4" />
+              Export CSV
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link href="/employees/new">
+              <Plus className="h-4 w-4" />
+              Tambah Karyawan
+            </Link>
+          </Button>
+        </div>
       </PageHeader>
 
       <EmployeeFilters departments={departments} />

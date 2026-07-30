@@ -10,6 +10,8 @@ Aplikasi CRUD karyawan sederhana berbasis Next.js (App Router), Prisma, SQLite, 
 - Validasi form (Zod) di sisi server & client
 - Penanganan error unik (NIP/email duplikat) dengan pesan ramah
 - UI responsif berbasis shadcn/ui
+- **Export data karyawan ke CSV** (`GET /api/employees/export`)
+- **Import data karyawan dari CSV** (validasi per-baris, skip duplikat, ringkasan inserted/skipped)
 
 ## Stack
 
@@ -35,14 +37,18 @@ app/
         page.tsx          # detail
         not-found.tsx
         edit/page.tsx     # form edit
+api/
+  employees/export/route.ts  # export CSV
 components/
-  ui/                     # primitives (button, input, table, ...)
-  employees/              # form, table, filters, pagination, ...
+  ui/                      # primitives (button, input, table, ...)
+  employees/              # form, table, filters, pagination, import, ...
 lib/
   prisma.ts
   utils.ts
+  csv.ts                  # parser & serializer CSV
   validations/employee.ts
   actions/employee.ts     # Server Actions CRUD
+  actions/import-employees.ts  # import CSV
 prisma/
   schema.prisma
   seed.ts
@@ -88,6 +94,21 @@ migrasi ke PostgreSQL, boleh ubah ke `enum` native bila perlu.
 | `npm run db:migrate` | Migrasi |
 | `npm run db:seed` | Isi data demo |
 | `npm run db:studio` | Prisma Studio (GUI data) |
+
+## Import / Export CSV
+
+**Export:** tombol "Export CSV" di halaman daftar, atau akses langsung
+`GET /api/employees/export`. Mengunduh `karyawan-YYYY-MM-DD.csv` berisi seluruh
+karyawan dengan header: `nip,name,email,phone,position,department,joinDate,status`.
+
+**Import:** tombol "Import" di halaman daftar. Format CSV sama dengan output
+export (header wajib ada di baris pertama, atau boleh di-skip otomatis).
+- Validasi per-baris pakai Zod.
+- Baris invalid / duplikat di-skip, tidak membatalkan batch.
+- Hasil: jumlah ditambahkan vs dilewati + daftar baris bermasalah.
+- Tombol "Unduh template" menyediakan file contoh.
+
+Format tanggal: `YYYY-MM-DD`. Status: `ACTIVE` atau `INACTIVE`.
 
 ## Alur Data
 
