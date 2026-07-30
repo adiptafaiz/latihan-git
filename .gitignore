@@ -226,8 +226,8 @@ build/
 next-env.d.ts
 
 # Prisma
-dev.db
-dev.db-journal
+*.db
+*.db-journal
 prisma/migrations/dev/
 
 # Env

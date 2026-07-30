@@ -22,7 +22,7 @@ Aplikasi CRUD karyawan sederhana berbasis Next.js (App Router), Prisma, SQLite, 
 | Styling | Tailwind CSS v4 + shadcn/ui (manual) |
 | Validasi | Zod |
 | ORM | Prisma |
-| DB (dev) | SQLite |
+| DB | PostgreSQL |
 
 ## Struktur
 
@@ -62,26 +62,33 @@ prisma/
 
 ### Langkah
 
-```bash
-# 1. Install dependencies
-npm install
-
-# 2. Migrasi database (membuat dev.db)
-npx prisma migrate dev --name init
-
-# 3. (Opsional) Seed data demo
-npx prisma db seed
-
-# 4. Jalankan dev server
-npm run dev
-```
+1. **Siapkan database PostgreSQL** lokal (atau cloud: Neon/Supabase/Railway).
+2. **Salin `.env`** dari `.env.example` lalu isi `DATABASE_URL` sesuai kredensial Anda:
+   ```
+   DATABASE_URL="postgresql://postgres:postgres@localhost:5432/pendataan_karyawan?schema=public"
+   ```
+   Pastikan database `pendataan_karyawan` sudah dibuat (create database manual di Postgres Anda).
+3. **Install & migrate:**
+   ```bash
+   npm install
+   npx prisma migrate dev --name init
+   ```
+4. **(Opsional) Seed data demo:**
+   ```bash
+   npx prisma db seed
+   ```
+5. **Jalankan dev server:**
+   ```bash
+   npm run dev
+   ```
 
 Buka http://localhost:3000 → akan redirect ke `/employees`.
 
-### Catatan SQLite & enum
-SQLite tidak mendukung `enum` Prisma. Karena itu `status` disimpan sebagai `String`
-dengan default `"ACTIVE"` dan divalidasi sebagai enum di layer aplikasi (Zod). Saat
-migrasi ke PostgreSQL, boleh ubah ke `enum` native bila perlu.
+### Catatan PostgreSQL
+- `status` disimpan sebagai `String` (default `"ACTIVE"`) untuk migrasi minimal
+  dari SQLite; divalidasi sebagai enum di layer aplikasi (Zod). Bisa ditingkatkan
+  ke `enum` native Postgres bila perlu.
+- Pencarian (`contains`) memakai `mode: "insensitive"` agar case-insensitive.
 
 ## Skrip npm
 
@@ -122,11 +129,10 @@ Form → useActionState → Server Action → Zod safeParse → Prisma → DB
 
 ## Deployment
 
-1. Buat database PostgreSQL (Neon/Supabase/Railway).
-2. Ubah `schema.prisma` → `provider = "postgresql"`.
-3. Set `DATABASE_URL` di platform (Vercel).
-4. Build command: `prisma generate && prisma migrate deploy && next build`.
-5. **Wajib** tambahkan autentikasi sebelum expose publik (MVP belum punya auth).
+1. Buat database PostgreSQL (Neon/Supabase/Railway) — atau pakai yang sama dengan dev.
+2. Set `DATABASE_URL` di platform (Vercel).
+3. Build command: `prisma generate && prisma migrate deploy && next build`.
+4. **Wajib** tambahkan autentikasi sebelum expose publik (MVP belum punya auth).
 
 ## Pengujian Manual (ringkas)
 
