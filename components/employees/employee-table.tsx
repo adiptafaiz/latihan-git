@@ -9,7 +9,9 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { EmployeeStatusBadge } from "@/components/employees/employee-status-badge";
+import { SortHeader } from "@/components/employees/sort-header";
 import { formatDate } from "@/lib/utils";
+import type { SortField, SortOrder } from "@/lib/actions/employee";
 
 type EmployeeRow = {
   id: string;
@@ -22,7 +24,15 @@ type EmployeeRow = {
   status: "ACTIVE" | "INACTIVE";
 };
 
-export function EmployeeTable({ data }: { data: EmployeeRow[] }) {
+export function EmployeeTable({
+  data,
+  current,
+  searchParams,
+}: {
+  data: EmployeeRow[];
+  current: { field: SortField; order: SortOrder };
+  searchParams: Record<string, string | undefined>;
+}) {
   if (data.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-12 text-center">
@@ -41,11 +51,19 @@ export function EmployeeTable({ data }: { data: EmployeeRow[] }) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[120px]">NIP</TableHead>
-            <TableHead>Nama</TableHead>
-            <TableHead>Departemen</TableHead>
+            <TableHead className="w-[120px]">
+              <SortHeader field="nip" label="NIP" current={current} searchParams={searchParams} />
+            </TableHead>
+            <TableHead>
+              <SortHeader field="name" label="Nama" current={current} searchParams={searchParams} />
+            </TableHead>
+            <TableHead>
+              <SortHeader field="department" label="Departemen" current={current} searchParams={searchParams} />
+            </TableHead>
             <TableHead className="hidden md:table-cell">Jabatan</TableHead>
-            <TableHead className="hidden lg:table-cell">Bergabung</TableHead>
+            <TableHead className="hidden lg:table-cell">
+              <SortHeader field="joinDate" label="Bergabung" current={current} searchParams={searchParams} />
+            </TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="text-right">Aksi</TableHead>
           </TableRow>

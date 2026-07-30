@@ -29,6 +29,11 @@ export function EmployeeFilters({
     if (q) sp.set("q", q);
     if (department) sp.set("department", department);
     if (status) sp.set("status", status);
+    // Pertahankan sort/order saat filter berubah.
+    const curSort = params.get("sort");
+    const curOrder = params.get("order");
+    if (curSort) sp.set("sort", curSort);
+    if (curOrder) sp.set("order", curOrder);
     sp.set("page", "1");
 
     startTransition(() => {
