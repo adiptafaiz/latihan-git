@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -6,6 +7,19 @@ async function main() {
   console.log("🌱 Seeding database...");
 
   await prisma.employee.deleteMany({});
+  await prisma.user.deleteMany({});
+
+  // Admin user default
+  const hashed = await bcrypt.hash("admin123", 12);
+  await prisma.user.create({
+    data: {
+      email: "admin@perusahaan.com",
+      name: "Administrator",
+      password: hashed,
+      role: "admin",
+    },
+  });
+  console.log("✅ Admin user dibuat: admin@perusahaan.com / admin123");
 
   await prisma.employee.createMany({
     data: [
