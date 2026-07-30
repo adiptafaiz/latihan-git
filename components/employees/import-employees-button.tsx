@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition, useRef } from "react";
-import Link from "next/link";
 import { Upload } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -34,7 +33,7 @@ export function ImportEmployeesButton() {
       setResult(res);
       if (res.success) {
         toast.success(
-          `Import selesai: ${res.inserted} ditambah, ${res.skipped} dilewati`,
+          `Import selesai: ${res.imported} berhasil, ${res.skippedDuplicateNip} NIP duplikat dilewati`,
         );
       } else {
         toast.error("Import gagal");
@@ -43,21 +42,29 @@ export function ImportEmployeesButton() {
   }
 
   function downloadTemplate() {
-    const header = "nip,name,email,phone,position,department,joinDate,status\r\n";
-    const samples = [
-      "EMP101,Budi Santoso,budi101@example.com,081234567890,Software Engineer,Engineering,2023-01-15,ACTIVE",
-      "EMP102,Siti Aminah,siti102@example.com,081298765432,HR Officer,Human Resources,2022-06-01,ACTIVE",
-      "EMP103,Andi Wijaya,andi103@example.com,,Finance Staff,Finance,2021-03-20,INACTIVE",
-      "EMP104,Dewi Lestari,dewi104@example.com,081311112222,Marketing Specialist,Marketing,2023-09-05,ACTIVE",
-      "EMP105,Rudi Hartono,rudi105@example.com,081455566677,Operations Lead,Operations,2020-11-12,ACTIVE",
+    const header = "nip,name,email,phone,position,department,joinDate,status";
+    const emptyRows = Array.from({ length: 5 }, () => ",,,,,,,").join("\r\n");
+    downloadCsv(`${header}\r\n${emptyRows}\r\n`, "template-karyawan.csv");
+  }
+
+  function downloadExampleCsv() {
+    const header = "nip,name,email,phone,position,department,joinDate,status";
+    const examples = [
+      "EMP999,Contoh Karyawan Satu,contoh999@example.invalid,081299900001,Contoh Jabatan,Engineering,2025-01-15,ACTIVE",
+      "EMP998,Contoh Karyawan Dua,contoh998@example.invalid,081299900002,Contoh Jabatan,Human Resources,2025-02-15,ACTIVE",
+      "EMP997,Contoh Karyawan Tiga,contoh997@example.invalid,081299900003,Contoh Jabatan,Finance,2025-03-15,INACTIVE",
     ].join("\r\n");
-    const blob = new Blob([header + samples + "\r\n"], {
+    downloadCsv(`${header}\r\n${examples}\r\n`, "contoh-karyawan.csv");
+  }
+
+  function downloadCsv(content: string, filename: string) {
+    const blob = new Blob([content], {
       type: "text/csv;charset=utf-8",
     });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "template-karyawan.csv";
+    a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
   }
@@ -89,8 +96,13 @@ export function ImportEmployeesButton() {
                 >
                   Unduh template
                 </Button>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href="/api/employees/export">Export contoh</Link>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  type="button"
+                  onClick={downloadExampleCsv}
+                >
+                  Download Example CSV
                 </Button>
               </div>
 
@@ -109,15 +121,21 @@ export function ImportEmployeesButton() {
               {result ? (
                 <div className="space-y-2 rounded-md border p-3 text-sm">
                   <p>
-                    ✅ <strong>{result.inserted}</strong> ditambah
+                    📄 <strong>{result.totalProcessed}</strong> total baris diproses
                   </p>
                   <p>
-                    ⏭️ <strong>{result.skipped}</strong> dilewati
+                    ✅ <strong>{result.imported}</strong> berhasil diimpor
+                  </p>
+                  <p>
+                    ⏭️ <strong>{result.skippedDuplicateNip}</strong> dilewati (NIP duplikat)
+                  </p>
+                  <p>
+                    ⚠️ <strong>{result.failed}</strong> gagal
                   </p>
                   {result.errors.length > 0 ? (
                     <div className="max-h-40 overflow-y-auto">
                       <p className="mb-1 font-medium text-destructive">
-                        Baris bermasalah:
+                        Baris gagal:
                       </p>
                       <ul className="space-y-1 text-xs text-muted-foreground">
                         {result.errors.map((e: ImportError, i: number) => (
