@@ -18,8 +18,13 @@ export type ImportResult = {
 
 /** Deteksi apakah baris header (case-insensitive). */
 function isHeaderRow(cells: string[]): boolean {
-  const lower = cells.map((c) => c.trim().toLowerCase());
-  return CSV_HEADERS.every((h) => lower.includes(h));
+  const lowerCells = cells.map((c) => c.trim().toLowerCase());
+
+  const expectedHeaders = CSV_HEADERS.map((h) => h.toLowerCase());
+
+  return expectedHeaders.every((header) =>
+    lowerCells.includes(header)
+  );
 }
 
 /**
