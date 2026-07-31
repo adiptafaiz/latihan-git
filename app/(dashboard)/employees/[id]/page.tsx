@@ -14,13 +14,14 @@ import { EmployeeStatusBadge } from "@/components/employees/employee-status-badg
 import { DeleteEmployeeButton } from "@/components/employees/delete-employee-button";
 import { getEmployeeById } from "@/lib/actions/employee";
 import { formatDate } from "@/lib/utils";
+import { auth } from "@/lib/auth";
 
 export default async function EmployeeDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
+  const [{ id }, session] = await Promise.all([params, auth()]);
   const employee = await getEmployeeById(id);
 
   if (!employee) notFound();
@@ -57,11 +58,13 @@ export default async function EmployeeDetailPage({
               Edit
             </Link>
           </Button>
-          <DeleteEmployeeButton
-            id={employee.id}
-            name={employee.name}
-            redirectTo="/employees"
-          />
+          {session?.user?.role === "admin" ? (
+            <DeleteEmployeeButton
+              id={employee.id}
+              name={employee.name}
+              redirectTo="/employees"
+            />
+          ) : null}
         </div>
       </PageHeader>
 
